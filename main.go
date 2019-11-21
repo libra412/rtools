@@ -49,8 +49,6 @@ func makeBasicControlsPage(w *ui.Window) ui.Control {
 
 	entryForm.Append("请求方式", httpMethod, false)
 	entryForm.Append("接口地址", httpRequestUrl, false)
-	// entryForm.Append("Password Entry", ui.NewPasswordEntry(), false)
-	// entryForm.Append("Search Entry", ui.NewSearchEntry(), false)
 	entryForm.Append("请求头", httpHeader, true)
 	entryForm.Append("请求体", httpBody, true)
 	httpResponse.SetReadOnly(true)
@@ -114,14 +112,22 @@ func SendRequest(method, requestUrl, requestHeader, requestBody string) string {
 	//这个一定要加，不加form的值post不过去
 	request.Header.Add("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/78.0.3904.97 Safari/537.36")
 	request.Header.Add("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3")
-	// request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	request.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	request.Header.Add("Accept-Language", "zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3")
 	request.Header.Add("Sec-Fetch-Mode", "navigate")
 	request.Header.Add("Sec-Fetch-Site", "same-origin")
 	request.Header.Add("Sec-Fetch-User", "?1")
 	request.Header.Set("Upgrade-Insecure-Requests", "1")
 	request.Header.Add("Connection", "keep-alive")
-
+	if len(requestHeader) > 0 {
+		headers := strings.Split(requestHeader, "/n")
+		for i := 0; i < len(headers); i++ {
+			headerList := strings.Split(headers[i], ":")
+			if len(headerList) > 1 {
+				request.Header.Set(headerList[0], headerList[1])
+			}
+		}
+	}
 	// Fetch Request
 	httpResp, err := client.Do(request)
 	if err != nil {
