@@ -77,7 +77,7 @@ func makeBasicControlsPage(w *ui.Window) ui.Control {
 //
 func setUp() {
 	// 初始化窗口
-	mainwin := ui.NewWindow("挂机软件", 640, 480, false)
+	mainwin := ui.NewWindow("请求工具", 640, 480, false)
 	mainwin.OnClosing(func(*ui.Window) bool {
 		ui.Quit()
 		return true
