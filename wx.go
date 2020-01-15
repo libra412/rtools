@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/andlabs/ui"
 	_ "github.com/andlabs/ui/winmanifest"
-	"github.com/go-vgo/robotgo"
+	//"github.com/go-vgo/robotgo"
 	"os/exec"
 	"time"
 )
@@ -83,7 +83,7 @@ func recharge(account, secret, money, orderId string) {
 	clickEmpty := "input tap 168 852"
 	clickDnf := "input tap 10 1430"
 	clickAccount := "input tap 300 440 "
-	deleteAccount := "input keyevent 67 "
+	deleteAccount := "input keyevent --longpress 67 "
 	inputAccount := "input text " + account
 	clickMoney := "input tap 168 952"
 	inputMoney := "input text " + money
@@ -91,18 +91,19 @@ func recharge(account, secret, money, orderId string) {
 	inputSecret := "input text " + secret
 	keyBack := "input keyevent 4"
 	fileName := orderId + ".png"
-	screencapImage := "/system/bin/screencap -p /data/local/tmp/" + fileName
-	copyImage := "pull /data/local/tmp/" + fileName + " ./" + fileName
+	screencapImage := "screencap -p /data/local/tmp/" + fileName
+	copyImage := "/data/local/tmp/" + fileName
+	desImage := "./" + fileName
 	//
 	execCommandRun(clickDnf)
 	time.Sleep(time.Second)
 	execCommandRun(clickAccount)
-	for i := 0; i <= len(account); i++ {
-		// execCommandRun(deleteAccount)
-		robotgo.KeyTap("backspace")
+	for i := 0; i <= len(account)/2; i++ {
+		execCommandRun(deleteAccount)
+		// robotgo.KeyTap("del")
 	}
-	// execCommandRun(inputAccount)
-	robotgo.TypeString(inputAccount)
+	execCommandRun(inputAccount)
+	// robotgo.TypeString(account)
 	execCommandRun(clickEmpty)
 	execCommandRun(clickMoney)
 	execCommandRun(inputMoney)
@@ -114,7 +115,7 @@ func recharge(account, secret, money, orderId string) {
 	//
 	time.Sleep(time.Second)
 	execCommandRun(screencapImage)
-	execCommand(copyImage)
+	execCommand(copyImage, desImage)
 	for i := 0; i < 2; i++ {
 		execCommandRun(keyBack)
 
@@ -131,8 +132,9 @@ func execCommandRun(cmd string) error {
 }
 
 // 执行命令
-func execCommand(cmd string) error {
-	c := exec.Command("adb", cmd)
-	err := c.Run()
+func execCommand(org, des string) error {
+	c := exec.Command("adb", "pull", org, des)
+	err := c.Start()
+	fmt.Println("download image", err)
 	return err
 }
